@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Weather app</string>
+    <string name="action_settings" />
+
+
+    <string-array name="temperature_options">
+        <item>metric</item>
+        <item>imperial</item>
+    </string-array>
+
+    <string-array name="language_options">
+        <item>eng</item>
+        <item>pl</item>
+    </string-array>
+
+    <string-array name="wind_options">
+        <item>km/h</item>
+        <item>mil/h</item>
+    </string-array>
+
+
+</resources>

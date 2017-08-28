@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <ListPreference
+        android:dialogTitle="Unit of temperature"
+        android:entries="@array/temperature_options"
+        android:entryValues="@array/temperature_options"
+        android:key="temperature"
+        android:summary="Choose temperature unit"
+        android:title="Temperature" />
+
+    <ListPreference
+        android:dialogTitle="Wind "
+        android:entries="@array/wind_options"
+        android:entryValues="@array/wind_options"
+        android:key="wind"
+        android:summary="Choose wind unit"
+        android:title="Wind" />
+
+    <ListPreference
+        android:dialogTitle="Language"
+        android:entries="@array/language_options"
+        android:entryValues="@array/language_options"
+        android:key="language"
+        android:summary="Choose language"
+        android:title="Language" />
+
+    <EditTextPreference
+        android:key="location"
+        android:summary="Set location"
+        android:title="Location" />
+</PreferenceScreen>
