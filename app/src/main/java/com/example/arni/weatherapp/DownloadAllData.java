@@ -6,26 +6,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Created by Arni on 2017-08-19.
- */
+class DownloadAllData {
 
-public class DownloadAllData {
-
-    String sendQuery(String urlAdress) {
+    String sendQuery(String urlAddress) {
         String response = null;
 
         try {
-            URL url = new URL(urlAdress);
+            URL url = new URL(urlAddress);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             InputStream inputStream = new BufferedInputStream(connection.getInputStream());
             response = streamToString(inputStream);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

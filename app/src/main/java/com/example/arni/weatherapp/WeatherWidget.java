@@ -9,14 +9,10 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 
 
-/**
- * Created by Arni on 2017-08-20.
- */
+
 
 public class WeatherWidget extends AppWidgetProvider {
     private RemoteViews remoteViews;
-    private String celcius = "metric";
-    private String fahrenheit = "imperial";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -40,10 +36,12 @@ public class WeatherWidget extends AppWidgetProvider {
 
 
         if (intent != null) {
-            String tempCelcius = intent.getStringExtra(MainActivity.TEMPERATURE_KEY); // + "℃"          DO SPRAWDZENIA
-            String tempFahrenheit = intent.getStringExtra(MainActivity.TEMPERATURE_KEY); // + "°F"
+            String tempCelcius = intent.getStringExtra(MainActivity.TEMPERATURE_KEY);
+            String tempFahrenheit = intent.getStringExtra(MainActivity.TEMPERATURE_KEY);
 
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.weather_widget_layout);
+            String celcius = "metric";
+            String fahrenheit = "imperial";
             if (MainActivity.sharedPreferences.getString(MainActivity.TEMPERATURE_KEY, "").equals(celcius)) {
                 remoteViews.setTextViewText(R.id.text_view_widget_temperature, tempCelcius);
             } else if (MainActivity.sharedPreferences.getString(MainActivity.TEMPERATURE_KEY, "").equals(fahrenheit)) {
