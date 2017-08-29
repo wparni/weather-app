@@ -10,10 +10,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by Arni on 2017-08-19.
- */
-
 class WeatherAdapter extends ArrayAdapter<Weather> {
 
 
@@ -26,6 +22,16 @@ class WeatherAdapter extends ArrayAdapter<Weather> {
         this.weatherList = listOfWeatherSpecs;
     }
 
+    private static class ViewHolder {
+        TextView temperature;
+        TextView humidity;
+        TextView location;
+        TextView weatherDescription;
+        TextView windSpeed;
+        TextView pressure;
+        TextView uv_index;
+
+    }
 
     @NonNull
     @Override
@@ -33,28 +39,36 @@ class WeatherAdapter extends ArrayAdapter<Weather> {
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View weatherInfoView = inflater.inflate(R.layout.weather_info, parent, false);
+        View weatherInfoView = convertView;
+        ViewHolder viewHolder = new ViewHolder();
 
-        TextView temperature = (TextView) weatherInfoView.findViewById(R.id.temperature);
-        TextView humidity = (TextView) weatherInfoView.findViewById(R.id.humidity);
-        TextView location = (TextView) weatherInfoView.findViewById(R.id.location);
-        TextView weatherDescription = (TextView) weatherInfoView.findViewById(R.id.weather_description);
-        TextView windSpeed = (TextView) weatherInfoView.findViewById(R.id.wind_speed);
+        if (weatherInfoView == null) {
+            weatherInfoView = inflater.inflate(R.layout.weather_info, parent, false);
+            viewHolder.temperature = (TextView) weatherInfoView.findViewById(R.id.temperature);
+            viewHolder.humidity = (TextView) weatherInfoView.findViewById(R.id.humidity);
+            viewHolder.location = (TextView) weatherInfoView.findViewById(R.id.location);
+            viewHolder.weatherDescription = (TextView) weatherInfoView.findViewById(R.id.weather_description);
+            viewHolder.windSpeed = (TextView) weatherInfoView.findViewById(R.id.wind_speed);
+            viewHolder.pressure = (TextView) weatherInfoView.findViewById(R.id.pressure);
+            viewHolder.uv_index = (TextView) weatherInfoView.findViewById(R.id.uv_index);
 
+
+            weatherInfoView.setTag(viewHolder);
+        }
+
+        viewHolder = (ViewHolder) weatherInfoView.getTag();
 
         Weather weather = weatherList.get(position);
 
-        String celcius = "metric";
-        String fahrenheit = "imperial";
-        if (MainActivity.sharedPreferences.getString(MainActivity.TEMPERATURE_KEY, "").equals(celcius)) {
-            temperature.setText(weather.getTemperature());
-        } else if (MainActivity.sharedPreferences.getString(MainActivity.TEMPERATURE_KEY, "").equals(fahrenheit)) {
-            temperature.setText(weather.getTemperature());
-        }
-        location.setText(weather.getCity());
-        humidity.setText(weather.getHumidity());
-        weatherDescription.setText(weather.getDescription());
-        windSpeed.setText(weather.getWind());
+
+        viewHolder.temperature.setText(weather.getTemperature());
+        viewHolder.location.setText(weather.getCity());
+        viewHolder.humidity.setText(weather.getHumidity());
+        viewHolder.weatherDescription.setText(weather.getDescription());
+        viewHolder.windSpeed.setText(weather.getWind());
+
+        viewHolder.uv_index.setText(MainActivity.sharedPreferences.getString(MainActivity.UV_KEY, ""));
+        viewHolder.pressure.setText(weather.getPressure());
 
 
         return weatherInfoView;

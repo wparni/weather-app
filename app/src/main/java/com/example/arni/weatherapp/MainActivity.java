@@ -17,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -33,16 +35,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ConvertingWindUnits{
 
-    private String urlAddress = "http://api.openweathermap.org/data/2.5/forecast?q=%s&lang=%s&units=%s&APPID=909d0a4d34bbefca53de0afe4fdf5fde";
+    static String urlAddress = "http://api.openweathermap.org/data/2.5/forecast?q=%s&lang=%s&units=%s&APPID=909d0a4d34bbefca53de0afe4fdf5fde";
+    private String urlAdressForUvIndex = "http://api.openweathermap.org/data//2.5/uvi?lat=%s&lon=%s&APPID=909d0a4d34bbefca53de0afe4fdf5fde";
     public static final String TEMPERATURE_KEY = "temperature";
     public static final String WIND_KEY = "wind";
     public static final String LANGUAGE_KEY = "language";
     public static final String LOCATION_KEY = "location";
-    static final String SAVING_KEY = "saving_array";
+    private static final String LONGITUDE_KEY = "longitude";
+    private static final String LATITUDE_KEY = "latitude";
+    private static final String SAVING_KEY = "saving_array";
+    public static final String UV_KEY = "uv_value";
     private ListView listView;
     static List<Weather> weatherList = new ArrayList<>();
+//    static List<Weather> weatherForeCast24h = new ArrayList<>();
     private WeatherAdapter weatherAdapter;
     private String city;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -51,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
     boolean connected;
     private String temperatureValue;
     private Weather weather;
+    private String longitude;
+    private String latitude;
+    private String uvValue;
+    private String wind;
 
 
     @Override
@@ -66,18 +77,37 @@ public class MainActivity extends AppCompatActivity {
         city = sharedPreferences.getString(LOCATION_KEY, "");
         language = sharedPreferences.getString(LANGUAGE_KEY, "");
         temperatureValue = sharedPreferences.getString(TEMPERATURE_KEY, "");
+        latitude = sharedPreferences.getString(LATITUDE_KEY, "");
+        longitude = sharedPreferences.getString(LONGITUDE_KEY, "");
+        wind = sharedPreferences.getString(WIND_KEY, "");
+        uvValue = sharedPreferences.getString(UV_KEY, "");
 
-        if (getSupportActionBar() != null && !sharedPreferences.getString(LOCATION_KEY, "").isEmpty()) {
-            getSupportActionBar().setTitle(sharedPreferences.getString(LOCATION_KEY, ""));
-        } else if (sharedPreferences.getString(LOCATION_KEY, "").isEmpty() && sharedPreferences.getString(LANGUAGE_KEY, "").equals("eng")) {
+
+        if (getSupportActionBar() != null && !city.isEmpty()) {
+            getSupportActionBar().setTitle(city);
+        } else if (city.isEmpty() && language.equals("eng")) {
             getSupportActionBar().setTitle("Set city");
-        } else if (sharedPreferences.getString(LOCATION_KEY, "").isEmpty() && sharedPreferences.getString(LANGUAGE_KEY, "").equals("pl")) {
+        } else if (city.isEmpty() && language.equals("pl")) {
             getSupportActionBar().setTitle("Ustaw miasto");
         }
+
+
+//        sharedPreferences.edit().clear().apply();
 
         weatherAdapter = new WeatherAdapter(this, weatherList);
         listView.setAdapter(weatherAdapter);
 
+//        displayCoordinates(longitude, latitude);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(view!=null){
+                    Intent intent = new Intent(MainActivity.this, ForeCast24h.class);
+                    startActivity(intent);
+                }
+            }
+        });
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeLayout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -89,34 +119,42 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    private String convertKmtoMilesSpeed(String windValue) {
+
+//    private void displayCoordinates(String longitude, String latitude) {
+//        if (longitude != null && latitude != null) {
+//            longitude_tv.setText(longitude);
+//            latitude_tv.setText(latitude);
+//        }
+//    }
+
+    public String convertKmtoMilesSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) / 1.61)) +sharedPreferences.getString(WIND_KEY, "");
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) / 1.61)) + wind;
     }
 
-    private String convertMilesToKmSpeed(String windValue) {
+    public String convertMilesToKmSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 1.61)) + sharedPreferences.getString(WIND_KEY, "");
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 1.61)) + wind;
     }
 
-    private String convertMetersToMilesSpeed(String windValue) {
+    public String convertMetersToMilesSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 2.24)) + sharedPreferences.getString(WIND_KEY, "");
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 2.24)) + wind;
     }
 
-    private String converMetersToKmWindSpeed(String windValue) {
+    public String converMetersToKmWindSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 3.6)) + sharedPreferences.getString(WIND_KEY, "");
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 3.6)) + wind;
 
     }
 
-    private String convertToFahrenheit(String actualTemp) {
+    public String convertToFahrenheit(String actualTemp) {
         actualTemp = actualTemp.replaceAll("[^\\d.]", "");
         return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(actualTemp) * 1.8 + 32)) + " °F";
 
     }
 
-    private String convertToCelcius(String actualTemp) {
+    public String convertToCelcius(String actualTemp) {
         actualTemp = actualTemp.replaceAll("[^\\d.]", "");
         return String.valueOf(String.format(Locale.US, "%.0f", (Double.parseDouble(actualTemp) - 32) / 1.8) + " ℃");
     }
@@ -170,16 +208,18 @@ public class MainActivity extends AppCompatActivity {
             weatherList = getArrayList(SAVING_KEY);
             String actualTemp = weatherList.get(0).getTemperature();
             String windValue = weatherList.get(0).getWind();
-            if(sharedPreferences.getString(WIND_KEY, "").equals("km/h") && !windValue.contains("km/h")){
+//            String pressureValue = weatherList.get(0).getPressure();
+            if (wind.equals("km/h") && !windValue.contains("km/h")) {
                 weatherList.get(0).setWind(convertMilesToKmSpeed(windValue));
-            }else if(sharedPreferences.getString(WIND_KEY, "").equals("mil/h") && !windValue.contains("mil/h")){
+            } else if (wind.equals("mil/h") && !windValue.contains("mil/h")) {
                 weatherList.get(0).setWind(convertKmtoMilesSpeed(windValue));
             }
-            if (sharedPreferences.getString(TEMPERATURE_KEY, "").equals("metric") && !actualTemp.contains("℃")) {
+            if (temperatureValue.equals("metric") && !actualTemp.contains("℃")) {
                 weatherList.get(0).setTemperature(convertToCelcius(actualTemp));
-            } else if (sharedPreferences.getString(TEMPERATURE_KEY, "").equals("imperial") && !actualTemp.contains("°F")) {
+            } else if (temperatureValue.equals("imperial") && !actualTemp.contains("°F")) {
                 weatherList.get(0).setTemperature(convertToFahrenheit(actualTemp));
             }
+
             saveArrayListSharedPreferences(weatherList, SAVING_KEY);
         }
         weatherAdapter = new WeatherAdapter(MainActivity.this, weatherList);
@@ -189,8 +229,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getWeatherDataOnline() {
-        if (!sharedPreferences.getString(LOCATION_KEY, "").isEmpty() && !sharedPreferences.getString(LANGUAGE_KEY, "").isEmpty()) {
+        if (!city.isEmpty() && !language.isEmpty()) {
             new DownloadData().execute();
+            if (!latitude.isEmpty() && !longitude.isEmpty()) {
+                new DownloadUVvalue().execute();
+            }
         }
     }
 
@@ -240,8 +283,9 @@ public class MainActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
                                       @Override
                                       public void run() {
-                                          new RefreshDownloadData().execute();
-                                          if (weatherList.isEmpty()) {
+                                          if (!weatherList.isEmpty()) {
+                                              new DownloadData().execute();
+                                          } else if (weatherList.isEmpty()) {
                                               runOnUiThread(new Runnable() {
                                                   @Override
                                                   public void run() {
@@ -285,6 +329,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject main = info.getJSONObject("main");
                     String temp = main.getString("temp");
                     String humidity = main.getString("humidity");
+                    String pressure = main.getString("pressure");
 
 
                     JSONArray weatherDescriptionList = info.getJSONArray("weather");
@@ -296,30 +341,34 @@ public class MainActivity extends AppCompatActivity {
                     String country = city.getString("country");
                     String cityName = city.getString("name");
 
-                    JSONObject wind = info.getJSONObject("wind");
-                    String windSpeed = wind.getString("speed");
+                    JSONObject coord = city.getJSONObject("coord");
+                    longitude = coord.getString("lon");
+                    latitude = coord.getString("lat");
+
+                    sharedPreferences.edit().putString(LONGITUDE_KEY, longitude).putString(LATITUDE_KEY, latitude).apply();
+
+                    JSONObject windObject = info.getJSONObject("wind");
+                    String windSpeed = windObject.getString("speed");
 
 
                     String parsedTempCelcius = String.format(Math.round(Float.parseFloat(temp)) + "%s", " ℃");
                     String parsedTempFahrenheit = String.format(Math.round(Float.parseFloat(temp)) + "%s", " °F");
 
-                    if (sharedPreferences.getString(TEMPERATURE_KEY, "").equals("metric")) {
-                        if (sharedPreferences.getString(WIND_KEY, "").equals("km/h")) {
+                    if (temperatureValue.equals("metric")) {
+                        if (wind.equals("km/h")) {
                             windSpeed = converMetersToKmWindSpeed(windSpeed);
-                        } else if (sharedPreferences.getString(WIND_KEY, "").equals("mil/h")) {
+                        } else if (wind.equals("mil/h")) {
                             windSpeed = convertMetersToMilesSpeed(windSpeed);
                         }
-                        weather = new Weather(country, cityName, windSpeed, parsedTempCelcius, humidity, description);
-                    } else if (sharedPreferences.getString(TEMPERATURE_KEY, "").equals("imperial")) {
-                        if (sharedPreferences.getString(WIND_KEY, "").equals("km/h")) {
+                        weather = new Weather(country, cityName, windSpeed, parsedTempCelcius, humidity, description, longitude, latitude, pressure);
+                    } else if (temperatureValue.equals("imperial")) {
+                        if (wind.equals("km/h")) {
                             windSpeed = convertMilesToKmSpeed(windSpeed);
-                        } else if (sharedPreferences.getString(WIND_KEY, "").equals("mil/h")) {
-                            windSpeed = String.format(Locale.US, "%.0f %s", Double.parseDouble(windSpeed), sharedPreferences.getString(WIND_KEY, ""));
+                        } else if (wind.equals("mil/h")) {
+                            windSpeed = String.format(Locale.US, "%.0f %s", Double.parseDouble(windSpeed), wind);
                         }
-                        weather = new Weather(country, cityName, windSpeed, parsedTempFahrenheit, humidity, description);
+                        weather = new Weather(country, cityName, windSpeed, parsedTempFahrenheit, humidity, description, longitude, latitude, pressure);
                     }
-
-
                     if (weatherList.size() < 1) {
                         weatherList.add(0, weather);
                     } else if (weatherList.size() == 1) {
@@ -337,6 +386,12 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             progress.dismiss();
+            latitude = sharedPreferences.getString(LATITUDE_KEY, "");
+            longitude = sharedPreferences.getString(LONGITUDE_KEY, "");
+
+            if (!latitude.isEmpty() && !longitude.isEmpty()) {
+                new DownloadUVvalue().execute();
+            }
             saveArrayListSharedPreferences(weatherList, SAVING_KEY);
 
             weatherAdapter = new WeatherAdapter(MainActivity.this, weatherList);
@@ -346,72 +401,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    private class RefreshDownloadData extends AsyncTask<Void, Void, Void> {
-        ProgressDialog progress;
-        String newUrlAddress = String.format(urlAddress, city, language, temperatureValue);
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progress = new ProgressDialog(MainActivity.this);
-            progress.setMessage("Refreshing weather");
-            progress.setCancelable(false);
-            progress.show();
-
-        }
+    private class DownloadUVvalue extends AsyncTask<Void, Void, Void> {
+        String urlAddressUv = String.format(urlAdressForUvIndex, latitude, longitude);
 
         @Override
         protected Void doInBackground(Void... params) {
 
-            if (!weatherList.isEmpty()) {
-                String jsonString = new DownloadAllData().sendQuery(newUrlAddress);
-                if (jsonString != null) {
-                    try {
-                        JSONObject json = new JSONObject(jsonString);
-                        JSONArray weatherData = json.getJSONArray("list");
-                        JSONObject info = weatherData.getJSONObject(0);
-                        JSONObject main = info.getJSONObject("main");
-                        String temp = main.getString("temp");
-                        String humidity = main.getString("humidity");
-
-                        JSONArray weatherDescriptionList = info.getJSONArray("weather");
-                        JSONObject weatherDescription = weatherDescriptionList.getJSONObject(0);
-                        String description = weatherDescription.getString("description");
-
-                        JSONObject city = json.getJSONObject("city");
-                        String country = city.getString("country");
-                        String cityName = city.getString("name");
-
-
-                        JSONObject wind = info.getJSONObject("wind");
-                        String windSpeed = wind.getString("speed");
-
-                        String parsedTempCelcius = String.format(Math.round(Float.parseFloat(temp)) + "%s", " ℃");
-                        String parsedTempFahrenheit = String.format(Math.round(Float.parseFloat(temp)) + "%s", " °F");
-
-                        if (sharedPreferences.getString(TEMPERATURE_KEY, "").equals("metric")) {
-                            if (sharedPreferences.getString(WIND_KEY, "").equals("km/h")) {
-                                windSpeed = converMetersToKmWindSpeed(windSpeed);
-                            } else if (sharedPreferences.getString(WIND_KEY, "").equals("mil/h")) {
-                                windSpeed = convertMetersToMilesSpeed(windSpeed);
-                            }
-                            weather = new Weather(country, cityName, windSpeed, parsedTempCelcius, humidity, description);
-                        } else if (sharedPreferences.getString(TEMPERATURE_KEY, "").equals("imperial")) {
-                            if (sharedPreferences.getString(WIND_KEY, "").equals("km/h")) {
-                                windSpeed = convertMilesToKmSpeed(windSpeed);
-                            } else if (sharedPreferences.getString(WIND_KEY, "").equals("mil/h")) {
-                                windSpeed = String.format(Locale.US, "%.0f %s", Double.parseDouble(windSpeed), sharedPreferences.getString(WIND_KEY, ""));
-                            }
-                            weather = new Weather(country, cityName, windSpeed, parsedTempFahrenheit, humidity, description);
-                        }
-
-                        weatherList.set(0, weather);
-
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+            String jsonString = new DownloadAllData().sendQuery(urlAddressUv);
+            if (jsonString != null) {
+                try {
+                    JSONObject jsonObject = new JSONObject(jsonString);
+                    String uvValue = jsonObject.getString("value");
+                    sharedPreferences.edit().putString(UV_KEY, uvValue).apply();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
             return null;
@@ -420,15 +423,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            progress.dismiss();
-            saveArrayListSharedPreferences(weatherList, SAVING_KEY);
 
-
-            if (!weatherList.isEmpty()) {
-                weatherAdapter = new WeatherAdapter(MainActivity.this, weatherList);
-                listView.setAdapter(weatherAdapter);
-                updateWidget();
-            }
+            weatherAdapter = new WeatherAdapter(MainActivity.this, weatherList);
+            listView.setAdapter(weatherAdapter);
         }
     }
 }

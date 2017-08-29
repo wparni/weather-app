@@ -46,6 +46,8 @@
             android:parentActivityName=".MainActivity"
             android:name=".Settings"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".ForeCast24h"/>
     </application>
 
 </manifest>

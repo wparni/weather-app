@@ -14,7 +14,7 @@ import android.widget.ListView;
 
 
 
-public class Settings extends PreferenceActivity {
+public class Settings extends PreferenceActivity{
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -33,7 +33,7 @@ public class Settings extends PreferenceActivity {
         String titleText = "SETTINGS";
 
         LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
-        Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.test, root, false);
+        Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar_layout, root, false);
         bar.setTitle(titleText);
         root.addView(bar, 0);
         bar.setNavigationOnClickListener(new View.OnClickListener() {
