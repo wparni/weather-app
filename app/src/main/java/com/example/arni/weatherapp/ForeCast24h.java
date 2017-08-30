@@ -47,8 +47,6 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
 
 
         new DownloadDataForecast24h().execute();
-
-
     }
 
     @Override
@@ -174,9 +172,6 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-
-
-
             for (int i = 0; i < weatherForecast24h.size(); i++) {
                 java.sql.Timestamp timestamp = java.sql.Timestamp.valueOf(weatherForecast24h.get(i).getDate());
                 valueY.add(timestamp.toString());
@@ -223,8 +218,6 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
             lineChart.invalidate();
             lineChart.notifyDataSetChanged();
 
-
-            textView.setText(weatherForecast24h.get(0).getTemperature());
         }
     }
 }
