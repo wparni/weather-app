@@ -16,11 +16,13 @@ public class Weather {
     private String longitude;
     private String latitude;
     private String pressure;
+    private String date;
 
-    public Weather(String temperature, String description, String wind){
+    public Weather(String temperature, String description, String wind, String date){
         this.temperature = temperature;
         this.description = description;
         this.wind = wind;
+        this.date = date;
     }
 
     public Weather(String country, String city, String wind, String temperature, String humidity, String description, String longitude, String latitude, String pressure) {
@@ -106,5 +108,13 @@ public class Weather {
 
     public void setPressure(String pressure) {
         this.pressure = pressure;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

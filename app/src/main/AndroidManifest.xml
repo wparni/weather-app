@@ -43,11 +43,13 @@
         </activity>
 
         <activity
-            android:parentActivityName=".MainActivity"
             android:name=".Settings"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".ForeCast24h"/>
+        <activity
+            android:name=".ForeCast24h"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
     </application>
 
 </manifest>

@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
     public static final String UV_KEY = "uv_value";
     private ListView listView;
     static List<Weather> weatherList = new ArrayList<>();
-//    static List<Weather> weatherForeCast24h = new ArrayList<>();
     private WeatherAdapter weatherAdapter;
     private String city;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -92,12 +91,9 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         }
 
 
-//        sharedPreferences.edit().clear().apply();
-
         weatherAdapter = new WeatherAdapter(this, weatherList);
         listView.setAdapter(weatherAdapter);
 
-//        displayCoordinates(longitude, latitude);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -105,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
                 if(view!=null){
                     Intent intent = new Intent(MainActivity.this, ForeCast24h.class);
                     startActivity(intent);
+                    finish();
                 }
             }
         });
@@ -120,12 +117,6 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
 
     }
 
-//    private void displayCoordinates(String longitude, String latitude) {
-//        if (longitude != null && latitude != null) {
-//            longitude_tv.setText(longitude);
-//            latitude_tv.setText(latitude);
-//        }
-//    }
 
     public String convertKmtoMilesSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
