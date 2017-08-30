@@ -157,8 +157,6 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
                         }
                         if (weatherForecast24h.isEmpty() || weatherForecast24h.size() < 8) {
                             weatherForecast24h.add(weather);
-                        } else if (weatherForecast24h.size() == 8) {
-                            weatherForecast24h.clear();
                         }
                     }
                 } catch (JSONException e) {
@@ -216,8 +214,8 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
             lineChart.getDescription().setEnabled(true);
             lineChart.getDescription().setText("24h forecast");
             lineChart.invalidate();
-            lineChart.notifyDataSetChanged();
 
+            weatherForecast24h.clear();
         }
     }
 }
