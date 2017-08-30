@@ -155,7 +155,7 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
                             }
                             weather = new Weather(parsedTempFahrenheit, description, windSpeed, hour);
                         }
-                        if (weatherForecast24h.isEmpty() || weatherForecast24h.size() < 8) {
+                        if (weatherForecast24h.size() < 8) {
                             weatherForecast24h.add(weather);
                         }
                     }
