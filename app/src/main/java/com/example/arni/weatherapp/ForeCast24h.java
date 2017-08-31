@@ -137,8 +137,8 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
                         String hour = info.getString("dt_txt");
 
 
-                        String parsedTempCelcius = String.valueOf(Math.round(Float.parseFloat(temp)));// + "%s", " ℃");
-                        String parsedTempFahrenheit = String.valueOf(Math.round(Float.parseFloat(temp)));// + "%s", " °F");
+                        String parsedTempCelcius = String.valueOf(Math.round(Float.parseFloat(temp)));
+                        String parsedTempFahrenheit = String.valueOf(Math.round(Float.parseFloat(temp)));
 
                         if (MainActivity.sharedPreferences.getString(MainActivity.TEMPERATURE_KEY, "").equals("metric")) {
                             if (MainActivity.sharedPreferences.getString(MainActivity.WIND_KEY, "").equals("km/h")) {

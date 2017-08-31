@@ -30,6 +30,8 @@ class WeatherAdapter extends ArrayAdapter<Weather> {
         TextView windSpeed;
         TextView pressure;
         TextView uv_index;
+        TextView sunset;
+        TextView sunrise;
 
     }
 
@@ -51,6 +53,8 @@ class WeatherAdapter extends ArrayAdapter<Weather> {
             viewHolder.windSpeed = (TextView) weatherInfoView.findViewById(R.id.wind_speed);
             viewHolder.pressure = (TextView) weatherInfoView.findViewById(R.id.pressure);
             viewHolder.uv_index = (TextView) weatherInfoView.findViewById(R.id.uv_index);
+            viewHolder.sunset = (TextView) weatherInfoView.findViewById(R.id.sunset);
+            viewHolder.sunrise = (TextView) weatherInfoView.findViewById(R.id.sunrise);
 
 
             weatherInfoView.setTag(viewHolder);
@@ -69,6 +73,8 @@ class WeatherAdapter extends ArrayAdapter<Weather> {
 
         viewHolder.uv_index.setText(MainActivity.sharedPreferences.getString(MainActivity.UV_KEY, ""));
         viewHolder.pressure.setText(weather.getPressure());
+        viewHolder.sunrise.setText(MainActivity.sharedPreferences.getString(MainActivity.SUNRISE_KEY, ""));
+        viewHolder.sunset.setText(MainActivity.sharedPreferences.getString(MainActivity.SUNSET_KEY, ""));
 
 
         return weatherInfoView;

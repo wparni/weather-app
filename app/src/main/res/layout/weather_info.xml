@@ -94,14 +94,14 @@
             android:layout_weight="1" />
 
         <TextView
-            android:id="@+id/sunset"
+            android:id="@+id/sunrise"
             android:layout_width="0dp"
             android:layout_height="80dp"
             android:layout_weight="4"
             android:gravity="center" />
 
         <TextView
-            android:id="@+id/sunrise"
+            android:id="@+id/sunset"
             android:layout_width="0dp"
             android:layout_height="80dp"
             android:layout_weight="4"

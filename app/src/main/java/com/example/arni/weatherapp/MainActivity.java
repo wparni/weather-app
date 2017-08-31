@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,22 +32,28 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements ConvertingWindUnits{
+public class MainActivity extends AppCompatActivity implements ConvertingWindUnits {
 
     static String urlAddress = "http://api.openweathermap.org/data/2.5/forecast?q=%s&lang=%s&units=%s&APPID=909d0a4d34bbefca53de0afe4fdf5fde";
     private String urlAdressForUvIndex = "http://api.openweathermap.org/data//2.5/uvi?lat=%s&lon=%s&APPID=909d0a4d34bbefca53de0afe4fdf5fde";
-    public static final String TEMPERATURE_KEY = "temperature";
-    public static final String WIND_KEY = "wind";
-    public static final String LANGUAGE_KEY = "language";
-    public static final String LOCATION_KEY = "location";
+    private String urlAddressForSunRiseSet = "http://api.openweathermap.org/data/2.5/weather?q=%s&APPID=909d0a4d34bbefca53de0afe4fdf5fde";
+    static final String TEMPERATURE_KEY = "temperature";
+    static final String WIND_KEY = "wind";
+    static final String LANGUAGE_KEY = "language";
+    static final String LOCATION_KEY = "location";
     private static final String LONGITUDE_KEY = "longitude";
     private static final String LATITUDE_KEY = "latitude";
     private static final String SAVING_KEY = "saving_array";
-    public static final String UV_KEY = "uv_value";
+    static final String SUNRISE_KEY = "sunrise";
+    static final String SUNSET_KEY = "sunset";
+    static final String UV_KEY = "uv_value";
     private ListView listView;
     static List<Weather> weatherList = new ArrayList<>();
     private WeatherAdapter weatherAdapter;
@@ -59,8 +66,11 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
     private Weather weather;
     private String longitude;
     private String latitude;
-    private String uvValue;
     private String wind;
+    private String uvValue;
+    private String sunset;
+    private String sunrise;
+    private LinearLayout linearLayout;
 
 
     @Override
@@ -70,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         Stetho.initializeWithDefaults(this);
 
         listView = (ListView) findViewById(R.id.list_view);
+        linearLayout = (LinearLayout) findViewById(R.id.main_activity);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -81,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         wind = sharedPreferences.getString(WIND_KEY, "");
         uvValue = sharedPreferences.getString(UV_KEY, "");
 
+        sunset = sharedPreferences.getString(SUNSET_KEY, "");
+        sunrise = sharedPreferences.getString(SUNRISE_KEY, "");
 
         if (getSupportActionBar() != null && !city.isEmpty()) {
             getSupportActionBar().setTitle(city);
@@ -90,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
             getSupportActionBar().setTitle("Ustaw miasto");
         }
 
+        changeBackground(linearLayout);
 
         weatherAdapter = new WeatherAdapter(this, weatherList);
         listView.setAdapter(weatherAdapter);
@@ -98,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(view!=null){
+                if (view != null) {
                     Intent intent = new Intent(MainActivity.this, ForeCast24h.class);
                     startActivity(intent);
                     finish();
@@ -117,6 +131,21 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
 
     }
 
+    void changeBackground(LinearLayout linearLayout) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm", Locale.ENGLISH);
+        Date currentTime = Calendar.getInstance().getTime();
+        String actualHour = dateFormat.format(currentTime);
+        int parsedActualHour = Integer.valueOf(actualHour.replaceAll("[^\\d]", ""));
+        int parsedSunriseHour = Integer.valueOf(sunrise.replaceAll("[^\\d]", ""));
+        int parsedSunsetHour = Integer.valueOf(sunset.replaceAll("[^\\d]", ""));
+
+        if (parsedActualHour > parsedSunriseHour && parsedActualHour <= parsedSunsetHour && !sunrise.isEmpty() && !sunset.isEmpty()) {
+            linearLayout.setBackgroundColor(getColor(R.color.colorLightBlue));
+        }else{
+            linearLayout.setBackgroundColor(getColor(R.color.colorDarkBlue));
+        }
+
+    }
 
     public String convertKmtoMilesSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
@@ -199,7 +228,6 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
             weatherList = getArrayList(SAVING_KEY);
             String actualTemp = weatherList.get(0).getTemperature();
             String windValue = weatherList.get(0).getWind();
-//            String pressureValue = weatherList.get(0).getPressure();
             if (wind.equals("km/h") && !windValue.contains("km/h")) {
                 weatherList.get(0).setWind(convertMilesToKmSpeed(windValue));
             } else if (wind.equals("mil/h") && !windValue.contains("mil/h")) {
@@ -222,9 +250,6 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
     private void getWeatherDataOnline() {
         if (!city.isEmpty() && !language.isEmpty()) {
             new DownloadData().execute();
-            if (!latitude.isEmpty() && !longitude.isEmpty()) {
-                new DownloadUVvalue().execute();
-            }
         }
     }
 
@@ -383,6 +408,8 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
             if (!latitude.isEmpty() && !longitude.isEmpty()) {
                 new DownloadUVvalue().execute();
             }
+            new DownloadSunSetRise().execute();
+
             saveArrayListSharedPreferences(weatherList, SAVING_KEY);
 
             weatherAdapter = new WeatherAdapter(MainActivity.this, weatherList);
@@ -408,6 +435,50 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
                     e.printStackTrace();
                 }
             }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            weatherAdapter = new WeatherAdapter(MainActivity.this, weatherList);
+            listView.setAdapter(weatherAdapter);
+        }
+    }
+
+    private class DownloadSunSetRise extends AsyncTask<Void, Void, Void> {
+        String urlAddressSun = String.format(urlAddressForSunRiseSet, city);
+
+        String convertingUnixTime(String value) {
+            Date date = new Date(Long.valueOf(value) * 1000);
+            return new SimpleDateFormat("kk:mm ", Locale.ENGLISH).format(date);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            String jsonString = new DownloadAllData().sendQuery(urlAddressSun);
+            if (jsonString != null) {
+                try {
+                    JSONObject jsonObject = new JSONObject(jsonString);
+                    JSONObject jsonSun = jsonObject.getJSONObject("sys");
+
+                    String sunset = jsonSun.getString("sunset");
+                    String sunrise = jsonSun.getString("sunrise");
+
+                    sunset = convertingUnixTime(sunset);
+                    sunrise = convertingUnixTime(sunrise);
+
+
+                    sharedPreferences.edit().putString(SUNSET_KEY, sunset).apply();
+                    sharedPreferences.edit().putString(SUNRISE_KEY, sunrise).apply();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
             return null;
         }
 
