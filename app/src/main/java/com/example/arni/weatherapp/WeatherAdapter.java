@@ -25,7 +25,6 @@ class WeatherAdapter extends ArrayAdapter<Weather> {
     private static class ViewHolder {
         TextView temperature;
         TextView humidity;
-        TextView location;
         TextView weatherDescription;
         TextView windSpeed;
         TextView pressure;
@@ -48,7 +47,6 @@ class WeatherAdapter extends ArrayAdapter<Weather> {
             weatherInfoView = inflater.inflate(R.layout.weather_info, parent, false);
             viewHolder.temperature = (TextView) weatherInfoView.findViewById(R.id.temperature);
             viewHolder.humidity = (TextView) weatherInfoView.findViewById(R.id.humidity);
-            viewHolder.location = (TextView) weatherInfoView.findViewById(R.id.location);
             viewHolder.weatherDescription = (TextView) weatherInfoView.findViewById(R.id.weather_description);
             viewHolder.windSpeed = (TextView) weatherInfoView.findViewById(R.id.wind_speed);
             viewHolder.pressure = (TextView) weatherInfoView.findViewById(R.id.pressure);
@@ -66,13 +64,12 @@ class WeatherAdapter extends ArrayAdapter<Weather> {
 
 
         viewHolder.temperature.setText(weather.getTemperature());
-        viewHolder.location.setText(weather.getCity());
-        viewHolder.humidity.setText(weather.getHumidity());
+        viewHolder.humidity.setText(String.format(weather.getHumidity()+"%s", " %"));
         viewHolder.weatherDescription.setText(weather.getDescription());
         viewHolder.windSpeed.setText(weather.getWind());
 
-        viewHolder.uv_index.setText(MainActivity.sharedPreferences.getString(MainActivity.UV_KEY, ""));
-        viewHolder.pressure.setText(weather.getPressure());
+        viewHolder.uv_index.setText(String.format(MainActivity.sharedPreferences.getString(MainActivity.UV_KEY, "") + "%s", " UV"));
+        viewHolder.pressure.setText(String.format(weather.getPressure() + "%s", " hPa"));
         viewHolder.sunrise.setText(MainActivity.sharedPreferences.getString(MainActivity.SUNRISE_KEY, ""));
         viewHolder.sunset.setText(MainActivity.sharedPreferences.getString(MainActivity.SUNSET_KEY, ""));
 

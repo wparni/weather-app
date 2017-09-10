@@ -157,22 +157,22 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
 
     public String convertKmtoMilesSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) / 1.61)) + wind;
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) / 1.61)) + " "+wind;
     }
 
     public String convertMilesToKmSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 1.61)) + wind;
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 1.61)) + " "+wind;
     }
 
     public String convertMetersToMilesSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 2.24)) + wind;
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 2.24)) + " "+wind;
     }
 
     public String converMetersToKmWindSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 3.6)) + wind;
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 3.6)) + " "+wind;
 
     }
 

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -32,7 +31,7 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
     private Weather weather;
     static List<Weather> weatherForecast24h = new ArrayList<>();
     private LineChart lineChart;
-    private ArrayList<Entry> valueX  = new ArrayList<>();
+    private ArrayList<Entry> valueX = new ArrayList<>();
     private ArrayList<String> valueY = new ArrayList<>();
 
     @Override
@@ -177,7 +176,7 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
             lineData.setColor(getColor(R.color.colorPrimary));
             lineData.setCircleColor(getColor(R.color.colorPrimaryDark));
             lineData.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-            lineData.setValueTextSize(20);
+            lineData.setValueTextSize(13);
             lineData.setValueFormatter(new ForeCast24h());
 
             LineData data = new LineData(lineData);
@@ -208,7 +207,9 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
             legend.setEnabled(false);
             lineChart.getDescription().setEnabled(true);
             lineChart.getDescription().setText("24h forecast");
+            lineChart.setVisibleYRangeMaximum(40, YAxis.AxisDependency.LEFT);
             lineChart.invalidate();
+
 
             weatherForecast24h.clear();
         }
