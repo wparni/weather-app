@@ -31,7 +31,6 @@ import java.util.Locale;
 public class ForeCast24h extends Activity implements ConvertingWindUnits, IValueFormatter {
     private Weather weather;
     static List<Weather> weatherForecast24h = new ArrayList<>();
-    private TextView textView;
     private LineChart lineChart;
     private ArrayList<Entry> valueX  = new ArrayList<>();
     private ArrayList<String> valueY = new ArrayList<>();
@@ -42,10 +41,6 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
         setContentView(R.layout.forecast);
         lineChart = (LineChart) findViewById(R.id.line_chart);
         lineChart.setNoDataText("Downloading data");
-
-        textView = (TextView) findViewById(R.id.data_tv);
-
-
         new DownloadDataForecast24h().execute();
     }
 

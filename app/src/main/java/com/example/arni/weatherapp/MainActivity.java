@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
     private String sunset;
     private String sunrise;
     private LinearLayout linearLayout;
+    private ImageView imageView;
 
 
     @Override
@@ -81,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
 
         listView = (ListView) findViewById(R.id.list_view);
         linearLayout = (LinearLayout) findViewById(R.id.main_activity);
+        imageView = (ImageView) findViewById(R.id.image_view);
+
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -131,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
 
     }
 
+
     void changeBackground(LinearLayout linearLayout) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm", Locale.ENGLISH);
         Date currentTime = Calendar.getInstance().getTime();
@@ -141,8 +146,11 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
 
         if (parsedActualHour > parsedSunriseHour && parsedActualHour <= parsedSunsetHour && !sunrise.isEmpty() && !sunset.isEmpty()) {
             linearLayout.setBackgroundColor(getColor(R.color.colorLightBlue));
-        }else{
+            imageView.setImageResource(R.drawable.sun);
+
+        } else {
             linearLayout.setBackgroundColor(getColor(R.color.colorDarkBlue));
+            imageView.setImageResource(R.drawable.moon);
         }
 
     }
@@ -223,6 +231,21 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         }
     };
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(broadcastReceiver, intentFilter);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
+    }
+
+
     private void updateDataOnSettingsChangedOffline() {
         if (getArrayList(SAVING_KEY) != null) {
             weatherList = getArrayList(SAVING_KEY);
@@ -251,20 +274,6 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         if (!city.isEmpty() && !language.isEmpty()) {
             new DownloadData().execute();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(broadcastReceiver, intentFilter);
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(broadcastReceiver);
     }
 
 
