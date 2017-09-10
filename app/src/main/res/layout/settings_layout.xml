@@ -12,22 +12,4 @@
         android:background="?attr/colorPrimary"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="5dp" />-->
-
-    <!--<ListView-->
-        <!--android:id="@+id/list_view_settings"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:layout_marginRight="10dp"-->
-        <!--android:divider="#999797"-->
-        <!--android:dividerHeight="2dp" />-->
-
-    <!--<LinearLayout-->
-        <!--android:id="@+id/linear_layout_settings"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="vertical" />-->
 </LinearLayout>
