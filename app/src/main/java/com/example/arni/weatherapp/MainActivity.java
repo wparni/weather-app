@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
             } else {
                 connected = false;
                 updateDataOnSettingsChangedOffline();
-                Toast.makeText(context, "Not connected", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Can't download data, no internet connection", Toast.LENGTH_SHORT).show();
             }
         }
     };

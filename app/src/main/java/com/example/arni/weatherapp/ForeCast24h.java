@@ -1,10 +1,16 @@
 package com.example.arni.weatherapp;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -33,6 +39,7 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
     private LineChart lineChart;
     private ArrayList<Entry> valueX = new ArrayList<>();
     private ArrayList<String> valueY = new ArrayList<>();
+    boolean connected;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +47,7 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
         setContentView(R.layout.forecast);
         lineChart = (LineChart) findViewById(R.id.line_chart);
         lineChart.setNoDataText("Downloading data");
-        new DownloadDataForecast24h().execute();
+
     }
 
     @Override
@@ -86,6 +93,42 @@ public class ForeCast24h extends Activity implements ConvertingWindUnits, IValue
         actualTemp = actualTemp.replaceAll("[^\\d.]", "");
         return String.valueOf(String.format(Locale.US, "%.0f", (Double.parseDouble(actualTemp) - 32) / 1.8) + " ℃");
     }
+
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            ConnectivityManager cm =
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo networkOn = cm.getActiveNetworkInfo();
+            if (networkOn != null) {
+                connected = true;
+                new DownloadDataForecast24h().execute();
+                Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show();
+            } else {
+                connected = false;
+                Toast.makeText(context, "Can't download data, no internet connection", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(broadcastReceiver, intentFilter);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
+    }
+
+
 
     @Override
     public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
