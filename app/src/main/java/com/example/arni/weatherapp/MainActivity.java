@@ -1,5 +1,8 @@
 package com.example.arni.weatherapp;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
     static final String SUNRISE_KEY = "sunrise";
     static final String SUNSET_KEY = "sunset";
     static final String UV_KEY = "uv_value";
+    static final String PRESSURE_KEY = "pressure";
     private ListView listView;
     static List<Weather> weatherList = new ArrayList<>();
     private WeatherAdapter weatherAdapter;
@@ -96,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         wind = sharedPreferences.getString(WIND_KEY, "");
         uvValue = sharedPreferences.getString(UV_KEY, "");
 
+
         sunset = sharedPreferences.getString(SUNSET_KEY, "");
         sunrise = sharedPreferences.getString(SUNRISE_KEY, "");
 
@@ -106,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         } else if (city.isEmpty() && language.equals("pl")) {
             getSupportActionBar().setTitle("Ustaw miasto");
         }
+
+
 
         changeBackground(linearLayout);
 
@@ -137,42 +144,43 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
 
 
     void changeBackground(LinearLayout linearLayout) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm", Locale.ENGLISH);
-        Date currentTime = Calendar.getInstance().getTime();
-        String actualHour = dateFormat.format(currentTime);
-        int parsedActualHour = Integer.valueOf(actualHour.replaceAll("[^\\d]", ""));
-        int parsedSunriseHour = Integer.valueOf(sunrise.replaceAll("[^\\d]", ""));
-        int parsedSunsetHour = Integer.valueOf(sunset.replaceAll("[^\\d]", ""));
+        if (!sunset.isEmpty() && !sunrise.isEmpty()) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm", Locale.ENGLISH);
+            Date currentTime = Calendar.getInstance().getTime();
+            String actualHour = dateFormat.format(currentTime);
+            int parsedActualHour = Integer.valueOf(actualHour.replaceAll("[^\\d]", ""));
+            int parsedSunriseHour = Integer.valueOf(sunrise.replaceAll("[^\\d]", ""));
+            int parsedSunsetHour = Integer.valueOf(sunset.replaceAll("[^\\d]", ""));
 
-        if (parsedActualHour > parsedSunriseHour && parsedActualHour <= parsedSunsetHour && !sunrise.isEmpty() && !sunset.isEmpty()) {
-            linearLayout.setBackgroundColor(getColor(R.color.colorLightBlue));
-            imageView.setImageResource(R.drawable.sun);
+            if (parsedActualHour > parsedSunriseHour && parsedActualHour <= parsedSunsetHour && !sunrise.isEmpty() && !sunset.isEmpty()) {
+                linearLayout.setBackgroundColor(getColor(R.color.colorLightBlue));
+                imageView.setImageResource(R.drawable.sun);
 
-        } else {
-            linearLayout.setBackgroundColor(getColor(R.color.colorDarkBlue));
-            imageView.setImageResource(R.drawable.moon);
+            } else if (parsedActualHour < parsedSunriseHour && parsedActualHour > parsedSunsetHour && !sunrise.isEmpty() && !sunset.isEmpty()) {
+                linearLayout.setBackgroundColor(getColor(R.color.colorDarkBlue));
+                imageView.setImageResource(R.drawable.moon);
+            }
         }
-
     }
 
     public String convertKmtoMilesSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) / 1.61)) + " "+wind;
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) / 1.61)) + " " + wind;
     }
 
     public String convertMilesToKmSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 1.61)) + " "+wind;
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 1.61)) + " " + wind;
     }
 
     public String convertMetersToMilesSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 2.24)) + " "+wind;
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 2.24)) + " " + wind;
     }
 
     public String converMetersToKmWindSpeed(String windValue) {
         windValue = windValue.replaceAll("[^\\d.]", "");
-        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 3.6)) + " "+wind;
+        return String.valueOf(String.format(Locale.US, "%.0f", Double.parseDouble(windValue) * 3.6)) + " " + wind;
 
     }
 
@@ -264,8 +272,11 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
 
             saveArrayListSharedPreferences(weatherList, SAVING_KEY);
         }
+        DetailsFragment detailsFragment = new DetailsFragment();
+        changeFragment(detailsFragment);
         weatherAdapter = new WeatherAdapter(MainActivity.this, weatherList);
         listView.setAdapter(weatherAdapter);
+
 
     }
 
@@ -274,6 +285,14 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         if (!city.isEmpty() && !language.isEmpty()) {
             new DownloadData().execute();
         }
+    }
+
+
+    void changeFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.details_fragment, fragment);
+        fragmentTransaction.commit();
     }
 
 
@@ -370,7 +389,11 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
                     longitude = coord.getString("lon");
                     latitude = coord.getString("lat");
 
-                    sharedPreferences.edit().putString(LONGITUDE_KEY, longitude).putString(LATITUDE_KEY, latitude).apply();
+                    sharedPreferences.edit().putString(LONGITUDE_KEY, longitude)
+                            .putString(LATITUDE_KEY, latitude)
+                            .putString(PRESSURE_KEY, pressure)
+                            .apply();
+
 
                     JSONObject windObject = info.getJSONObject("wind");
                     String windSpeed = windObject.getString("speed");
@@ -421,8 +444,14 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
 
             saveArrayListSharedPreferences(weatherList, SAVING_KEY);
 
+
+
             weatherAdapter = new WeatherAdapter(MainActivity.this, weatherList);
             listView.setAdapter(weatherAdapter);
+
+
+
+
 
             updateWidget();
         }
@@ -494,7 +523,8 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-
+            DetailsFragment detailsFragment = new DetailsFragment();
+            changeFragment(detailsFragment);
             weatherAdapter = new WeatherAdapter(MainActivity.this, weatherList);
             listView.setAdapter(weatherAdapter);
         }

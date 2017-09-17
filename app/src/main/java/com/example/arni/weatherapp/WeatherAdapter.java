@@ -27,10 +27,10 @@ class WeatherAdapter extends ArrayAdapter<Weather> {
         TextView humidity;
         TextView weatherDescription;
         TextView windSpeed;
-        TextView pressure;
-        TextView uv_index;
-        TextView sunset;
-        TextView sunrise;
+//        TextView pressure;
+//        TextView uv_index;
+//        TextView sunset;
+//        TextView sunrise;
 
     }
 
@@ -49,10 +49,10 @@ class WeatherAdapter extends ArrayAdapter<Weather> {
             viewHolder.humidity = (TextView) weatherInfoView.findViewById(R.id.humidity);
             viewHolder.weatherDescription = (TextView) weatherInfoView.findViewById(R.id.weather_description);
             viewHolder.windSpeed = (TextView) weatherInfoView.findViewById(R.id.wind_speed);
-            viewHolder.pressure = (TextView) weatherInfoView.findViewById(R.id.pressure);
-            viewHolder.uv_index = (TextView) weatherInfoView.findViewById(R.id.uv_index);
-            viewHolder.sunset = (TextView) weatherInfoView.findViewById(R.id.sunset);
-            viewHolder.sunrise = (TextView) weatherInfoView.findViewById(R.id.sunrise);
+//            viewHolder.pressure = (TextView) weatherInfoView.findViewById(R.id.pressure);
+//            viewHolder.uv_index = (TextView) weatherInfoView.findViewById(R.id.uv_index);
+//            viewHolder.sunset = (TextView) weatherInfoView.findViewById(R.id.sunset);
+//            viewHolder.sunrise = (TextView) weatherInfoView.findViewById(R.id.sunrise);
 
 
             weatherInfoView.setTag(viewHolder);
@@ -68,10 +68,10 @@ class WeatherAdapter extends ArrayAdapter<Weather> {
         viewHolder.weatherDescription.setText(weather.getDescription());
         viewHolder.windSpeed.setText(weather.getWind());
 
-        viewHolder.uv_index.setText(String.format(MainActivity.sharedPreferences.getString(MainActivity.UV_KEY, "") + "%s", " UV"));
-        viewHolder.pressure.setText(String.format(weather.getPressure() + "%s", " hPa"));
-        viewHolder.sunrise.setText(MainActivity.sharedPreferences.getString(MainActivity.SUNRISE_KEY, ""));
-        viewHolder.sunset.setText(MainActivity.sharedPreferences.getString(MainActivity.SUNSET_KEY, ""));
+//        viewHolder.uv_index.setText(String.format(MainActivity.sharedPreferences.getString(MainActivity.UV_KEY, "") + "%s", " UV"));
+//        viewHolder.pressure.setText(String.format(weather.getPressure() + "%s", " hPa"));
+//        viewHolder.sunrise.setText(MainActivity.sharedPreferences.getString(MainActivity.SUNRISE_KEY, ""));
+//        viewHolder.sunset.setText(MainActivity.sharedPreferences.getString(MainActivity.SUNSET_KEY, ""));
 
 
         return weatherInfoView;

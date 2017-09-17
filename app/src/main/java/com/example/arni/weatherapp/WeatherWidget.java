@@ -9,8 +9,6 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 
 
-
-
 public class WeatherWidget extends AppWidgetProvider {
     private RemoteViews remoteViews;
 
@@ -36,16 +34,19 @@ public class WeatherWidget extends AppWidgetProvider {
 
 
         if (intent != null) {
-            String tempCelcius = intent.getStringExtra(MainActivity.TEMPERATURE_KEY);
-            String tempFahrenheit = intent.getStringExtra(MainActivity.TEMPERATURE_KEY);
+            if (!MainActivity.sharedPreferences.getString(MainActivity.TEMPERATURE_KEY, "").isEmpty()) {
+                String tempCelcius = intent.getStringExtra(MainActivity.TEMPERATURE_KEY);
+                String tempFahrenheit = intent.getStringExtra(MainActivity.TEMPERATURE_KEY);
 
-            remoteViews = new RemoteViews(context.getPackageName(), R.layout.weather_widget_layout);
-            String celcius = "metric";
-            String fahrenheit = "imperial";
-            if (MainActivity.sharedPreferences.getString(MainActivity.TEMPERATURE_KEY, "").equals(celcius)) {
-                remoteViews.setTextViewText(R.id.text_view_widget_temperature, tempCelcius);
-            } else if (MainActivity.sharedPreferences.getString(MainActivity.TEMPERATURE_KEY, "").equals(fahrenheit)) {
-                remoteViews.setTextViewText(R.id.text_view_widget_temperature, tempFahrenheit);
+
+                remoteViews = new RemoteViews(context.getPackageName(), R.layout.weather_widget_layout);
+                String celcius = "metric";
+                String fahrenheit = "imperial";
+                if (MainActivity.sharedPreferences.getString(MainActivity.TEMPERATURE_KEY, "").equals(celcius)) {
+                    remoteViews.setTextViewText(R.id.text_view_widget_temperature, tempCelcius);
+                } else if (MainActivity.sharedPreferences.getString(MainActivity.TEMPERATURE_KEY, "").equals(fahrenheit)) {
+                    remoteViews.setTextViewText(R.id.text_view_widget_temperature, tempFahrenheit);
+                }
             }
         }
 
