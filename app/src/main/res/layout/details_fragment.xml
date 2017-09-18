@@ -112,7 +112,7 @@
             android:layout_weight="1"
             android:paddingBottom="16dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_wb_sunset" />
+            android:src="@drawable/sunset" />
 
     </LinearLayout>
 

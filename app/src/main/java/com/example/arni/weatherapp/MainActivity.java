@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.facebook.stetho.Stetho;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.plattysoft.leonids.ParticleSystem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         Stetho.initializeWithDefaults(this);
 
         listView = (ListView) findViewById(R.id.list_view);
+
         linearLayout = (LinearLayout) findViewById(R.id.main_activity);
         imageView = (ImageView) findViewById(R.id.image_view);
 
@@ -113,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
         }
 
 
-
         changeBackground(linearLayout);
 
         weatherAdapter = new WeatherAdapter(this, weatherList);
@@ -139,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
             }
         });
 
-
+        rainAnimation();
     }
 
 
@@ -156,11 +157,21 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
                 linearLayout.setBackgroundColor(getColor(R.color.colorLightBlue));
                 imageView.setImageResource(R.drawable.sun);
 
-            } else if (parsedActualHour < parsedSunriseHour && parsedActualHour > parsedSunsetHour && !sunrise.isEmpty() && !sunset.isEmpty()) {
+            } else {
                 linearLayout.setBackgroundColor(getColor(R.color.colorDarkBlue));
                 imageView.setImageResource(R.drawable.moon);
             }
         }
+    }
+
+    void rainAnimation() {
+        new ParticleSystem(MainActivity.this, 30, R.drawable.icons8_water, 10000)
+                .setSpeedByComponentsRange(0f, 0f, 0.01f, 0.02f)
+                .setSpeedModuleAndAngleRange(0, 0.1f, 180, 180)
+                .setAcceleration(0.00007f, 45)
+                .emit(findViewById(R.id.main_linear_layout), 8);
+
+
     }
 
     public String convertKmtoMilesSpeed(String windValue) {
@@ -445,12 +456,8 @@ public class MainActivity extends AppCompatActivity implements ConvertingWindUni
             saveArrayListSharedPreferences(weatherList, SAVING_KEY);
 
 
-
             weatherAdapter = new WeatherAdapter(MainActivity.this, weatherList);
             listView.setAdapter(weatherAdapter);
-
-
-
 
 
             updateWidget();
